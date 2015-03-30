@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include "Parse.h"
 
 void error(const char *msg)
 {
@@ -41,11 +42,125 @@ int main(int argc, char *argv[])
     serv_addr.sin_port = htons(portno);
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
         error("ERROR connecting");
-    strcpy(buffer,"start");
+    n = read(sockfd,buffer,255);
+    if (n < 0) error("ERROR reading from socket");
+    printf("%s\n",buffer);
 
-    
     while(strcmp(buffer,"quit") != 0){
-        printf("Please enter the message: ");
+        char** message = parse(buffer);
+        switch(atoi(message[0])){
+            case 103 :
+                //Account creation failed show which invalid entry
+                printf("Account creation failed.\n");
+                break;
+            case 104 :
+                //Account was created log in
+                printf("Account was created and you are now logged in. \n");
+                break;
+            case 105 :
+                //Account already exists
+                printf("Account already exists. \n");
+                break;
+            case 203 :
+                //Failed attempt to authenticat
+                printf("Authentication failed. \n");
+                break;
+            case 204 :
+                //Exceeded number of authentication attempts
+                printf("Exceeded number of authentication attempts. \n");
+                printf("You will be disconnected. \n");
+                close(sockfd);
+                break;
+            case 205 :
+                //Authentication succeeded 
+                printf("Authentication succeeded! \n");
+                printf("You are now logged in! \n");
+                break;
+            case 303 :
+                // Deposit worked, New balance is returned
+                printf("Deposit succesful! \n");
+                printf("Your new balance is $%s. \n", message[1]);
+                break;
+            case 304 :
+                //Deposit failed
+                printf("Deposit failed! \n");
+                printf("Your balance is still $%s. \n", message[1]);
+                break;
+
+            case 305 :
+                //Atm is full so return deposit
+                printf("Deposit failed!. \n ");
+                printf("Your deposit has been returned \n");
+                printf("Your balance is still $%s. \n", message[1]);
+                break;      
+                
+            case 403 :
+                //Withdraw is successful
+                printf("Your withdraw was successful! \n");
+                printf("Your new balance is $%s. \n", message[1]);
+                break;
+
+            case 404 :
+                //Withdraw was unsuccessful because of insufficient funds
+                printf("Your withdrawal was unsuccessful! \n");
+                printf("Insufficient funds. \n");
+                printf("Your balance is still $%s. \n", message[1]);
+                break;
+
+            case 405 :
+                //Not enough money in ATM for withdrawal
+                printf("Your withdrawal was unsuccessful! \n");
+                printf("Not enough money in ATM for that withdrawal amount. \n");
+            break;
+
+            case 503 :
+                //Returns balance request
+                printf("Your balance is $%s. \n", message[1]);
+            break;
+
+            case 603 :
+                //Transactions ???? 
+            break;
+
+            case 703 :
+                //Not enough money for stamps
+                printf("Transaction failed. \n");
+                printf("Insufficient funds to buy stamps. \n");
+                break;
+
+            case 704 :
+            //Buying stamps was successful return new balance
+                printf("Your transaction was successful! \n");
+                printf("Your new balance is $%s. \n", message[1]);
+                break;
+
+            case 705 :
+                //Not enough stamps left
+                printf("Not enough stamps available for this transaction. \n");
+            
+            case 803 :
+                //Successful logout
+                printf("Logout successful \n");
+                printf("You are now logged out. \n");
+
+            case 908 :
+                //Missing entries
+                printf("Your request was missing entries. \n");
+                printf("Please try again. \n"); 
+            break;
+
+            case 909 :
+                //Unknown error code received
+                printf("Unknown error occurred. \n");
+                printf("Please try again. \n");
+                break;
+
+            default :
+                 printf("Error: Invalid Request. \n");
+        }
+
+
+
         bzero(buffer,256);
         fgets(buffer,255,stdin);
         n = write(sockfd,buffer,strlen(buffer));

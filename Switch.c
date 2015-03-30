@@ -43,7 +43,7 @@ if (starter == 2)
     while ( input!= quit)
         {
             printf ("")
-            printf ("Please enter your command.  Deposit, withdrawl, check balance, buy stamps, recent transactions quit")'
+            printf ("Please enter your command.  Deposit, withdrawl, check balance, buy stamps, recent transactions quit");
             scanf ("%s" %Choice);
 
                 if (choice == deposit)

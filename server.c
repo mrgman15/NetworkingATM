@@ -6,7 +6,7 @@
 #include<unistd.h>    //write
  
 #include<pthread.h> //for threading , link with lpthread
-#define PORT 10107
+#define PORT 10109
  
 void *connection_handler(void *);
  
@@ -84,14 +84,16 @@ void *connection_handler(void *socket_desc)
      
     char *message;
     char buffer[256];
+    char* repeat;
      
     //Send some messages to the client
-    message = "Connection Established";
+    message = "205";
     write(sock , message , strlen(message));
     strcpy(buffer,"start");
     while(strcmp(buffer,"quit")){
         read(sock,buffer,256);
-        printf("%s",buffer);
+        if(strcmp(buffer,repeat) == 1) printf("%s",buffer);
+        repeat = buffer;
     }
     //Free the socket pointer
     free(socket_desc);
