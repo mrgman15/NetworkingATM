@@ -11,7 +11,7 @@ int main(){
 		//printf("%s\n",message1[i]);
 
 		//Validation Test
-		//*
+		/*
 		error = validateEmail(message1[i]);
 		if(error == 1){
 			printf("%s is not an email\n", message1[i]);
@@ -19,5 +19,7 @@ int main(){
 		else printf("%s is an email\n", message1[i]);
 		//*/
 	}
+	char* file = createFileName(message1);
+	putToFile(file,message1);
 	return 0;
 }

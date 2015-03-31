@@ -78,12 +78,6 @@ if (starter == 2)
         }
 
 
-
-
-Parse will be a 2D array
-
-Server Switch
-
 switch(message[0])
 {
 	case ‘101’ :
@@ -130,8 +124,7 @@ Client Switch
 message[1];
 printf(“%s”, message[1]);
 
-switch(message[0])
-{
+switch(message[0]){
 	case ‘103’ :
 		//Account creation failed show which invalid entry
 		printf(“Account creation failed.\n”);
@@ -151,9 +144,9 @@ switch(message[0])
 		break;
 	case ‘204’ :
 		//Exceeded number of authentication attempts
-printf(“Exceeded number of authentication attempts. \n”);
-printf(“You will be disconnected. \n”);
-close(sockfd);
+		printf(“Exceeded number of authentication attempts. \n”);
+		printf(“You will be disconnected. \n”);
+		close(sockfd);
 		break;
 	case ‘205’ :
 		//Authentication succeeded 
@@ -174,9 +167,9 @@ close(sockfd);
 	case ‘305’ :
 		//Atm is full so return deposit
 		printf(“Deposit failed!. \n “);
-printf(“Your deposit has been returned \n“);
-printf(“Your balance is still $%s. \n”, message[1]);
-break;		
+		printf(“Your deposit has been returned \n“);
+		printf(“Your balance is still $%s. \n”, message[1]);
+		break;		
 		
 	case ‘403’ :
 		//Withdraw is successful
@@ -191,33 +184,28 @@ break;
 		printf(“Your balance is still $%s. \n”, message[1]);
 		break;
 
-case ‘405’ :
-//Not enough money in ATM for withdrawal
-printf(“Your withdrawal was unsuccessful! \n“);
-printf(“Not enough money in ATM for that withdrawal amount. \n“);
-break;
-
-case ‘503’ :
-//Returns balance request
-printf(“Your balance is $%s. \n”, message[1]);
-break;
-
-case ‘603’ :
-//Transactions ????	
-break;
-
-
-
-
-
-
-case ‘703’ :
-	//Not enough money for stamps
-	printf(“Transaction failed. \n”);
-	printf(“Insufficient funds to buy stamps. \n”);
+	case ‘405’ :
+		//Not enough money in ATM for withdrawal
+		printf(“Your withdrawal was unsuccessful! \n“);
+		printf(“Not enough money in ATM for that withdrawal amount. \n“);
 	break;
 
-case ‘704’ :
+	case ‘503’ :
+		//Returns balance request
+		printf(“Your balance is $%s. \n”, message[1]);
+	break;
+
+	case ‘603’ :
+		//Transactions ????	
+	break;
+
+	case ‘703’ :
+		//Not enough money for stamps
+		printf(“Transaction failed. \n”);
+		printf(“Insufficient funds to buy stamps. \n”);
+		break;
+
+	case ‘704’ :
 	//Buying stamps was successful return new balance
 		printf(“Your transaction was successful! \n“);
 		printf(“Your new balance is $%s. \n”, message[1]);
@@ -232,11 +220,11 @@ case ‘704’ :
 		printf(“Logout successful \n”);
 		printf(“You are now logged out. \n”);
 
-case ‘908’ :
-//Missing entries
-printf(“Your request was missing entries. \n”);
-printf(“Please try again. \n”);	
-break;
+	case ‘908’ :
+		//Missing entries
+		printf(“Your request was missing entries. \n”);
+		printf(“Please try again. \n”);	
+	break;
 
 	case ‘909’ :
 		//Unknown error code received

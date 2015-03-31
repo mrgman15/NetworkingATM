@@ -103,12 +103,28 @@ int validateAmount(char* amount){
 int validateTransactions(char* num){
 	int i;
 	while(num[i] != '\0'){
-		if(!(num[i]>='0'&& num[i]<='9')){
+		if(!(num[i]>='0'&& num[i]<='5')){
 			return 1;
 		}
 		i++;
 	}
 	if(i != 1) return 1;
 	return 0;	
+}
+
+void putToFile(char* fileName, char** info){
+	FILE* account = fopen(fileName, "w");
+	int i=0;
+	while(info[i][0]>= '0' && info[i][0] <= 'z'){
+		fprintf(account,"%s ",info[i]);
+		i++;
+	}
+	fclose(account);
+}
+
+char* createFileName(char** info){
+	char* fileName = malloc(80 * sizeof(char));
+	sprintf(fileName,"%s-%s-%s",info[0],info[1],info[2]);
+	return fileName;
 }
 
