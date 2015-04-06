@@ -154,6 +154,26 @@ int validateLogin(char** input){
 	else return 0;
 }
 
+void addTransaction(char** input, char* transactionType, char* info){
+	int i = 7;
+	strcat(transactionType,info);
+	while(input[i] != '\0'){
+		i++;
+	}
+
+	if(i == 11){
+		input[7] = input[8];
+		input[8] = input[9];
+		input[9] = input[10];
+		input[10] = input[11];
+		input[11] = transactionType;
+	}
+
+	else{
+		input[i] = transactionType;
+	}
+}
+
 
 
 

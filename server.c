@@ -89,8 +89,9 @@ void *connection_handler(void *socket_desc)
     int loginFailure = 0, withdraw, deposit, amount;
     char* loginInfo;
     char* rbuffer;
+    char* holder;
 
-    char* incoming = parse(buffer);
+    char** incoming = parse(buffer);
     
 
     while(strcmp(incoming[0],"quit")){
@@ -149,6 +150,7 @@ void *connection_handler(void *socket_desc)
                 }
                 //Deposit Success
                 deposit = atoi(incoming[1]);
+                addTransaction(incoming,"Deposit:",incoming[1]);
                 incoming = parseFile(loginInfo);
                 deposit += atoi(incoming[6]);
                 sprintf(incoming[6], "%d", deposit);
@@ -168,7 +170,7 @@ void *connection_handler(void *socket_desc)
 
             case 401:
                 //Invalid Entry
-                if(validateAmount(incoming[1] == 1)){
+                if(validateAmount(incoming[1]) == 1){
                     rbuffer = "909";
                     write(sock , rbuffer , strlen(rbuffer));
                     break;
@@ -176,6 +178,7 @@ void *connection_handler(void *socket_desc)
 
                 //Valid Entry
                 withdraw = atoi(incoming[1]);
+                holder = incoming[1];
                 incoming = parseFile(loginInfo);
 
                 //Withdraw Failure
@@ -187,10 +190,11 @@ void *connection_handler(void *socket_desc)
                     break;
                 }
                 //Withdraw Success
+                addTransaction(incoming,"Withdraw:",holder);
                 withdraw *= (-1);
                 withdraw += atoi(incoming[6]);
                 sprintf(incoming[6], "%d", withdraw);
-                putToFile(loginInfo, incoming[6]);
+                putToFile(loginInfo, incoming);
                 rbuffer = "403 ";
                 strcat(rbuffer, incoming[6]);
                 write(sock , rbuffer , strlen(rbuffer));
@@ -213,25 +217,42 @@ void *connection_handler(void *socket_desc)
 
             case 601:
                 //Return n Previous Transactions
+                incoming = parseFile(loginInfo);
+                int k=7;
+                while(incoming[k] != '\0'){
+                    k++;
+                }
+                rbuffer = "603 ";
+                strcat(rbuffer, (k+48));
+                strcat(rbuffer, " ");
+                k=7;
+                while(incoming[k] != '\0'){
+                    strcat(rbuffer, incoming[k]);
+                    strcat(rbuffer, " ");
+                    k++;
+                }
+
                 break;
 
             case 701:
                 amount = atoi(incoming[1]);
-		incoming = parseFile(loginInfo);
-				
-		//Not enough funds to buy stamps
-		if(atoi(incoming[6]) < amount){
-			rbuffer = "703";
-			write(sock , rbuffer , strlen(rbuffer));
-			break;
-		}	 
-		//Stamps bought
-		amount *= (-1);
-		amount += atoi(incoming[6]);
-		sprintf(incoming[6], "%d", amount);
-		putToFile(loginInfo, incoming[6]);
-		rbuffer = "704 ";
-		strcat(rbuffer, incoming[6]);
+                holder = incoming[1];
+        		incoming = parseFile(loginInfo);
+        				
+        		//Not enough funds to buy stamps
+        		if(atoi(incoming[6]) < amount){
+        			rbuffer = "703";
+        			write(sock , rbuffer , strlen(rbuffer));
+        			break;
+        		}	 
+        		//Stamps bought
+                addTransaction(incoming,"Stamps",holder);
+        		amount *= (-1);
+        		amount += atoi(incoming[6]);
+        		sprintf(incoming[6], "%d", amount);
+        		putToFile(loginInfo, incoming);
+        		rbuffer = "704 ";
+        		strcat(rbuffer, incoming[6]);
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
                 
@@ -241,7 +262,7 @@ void *connection_handler(void *socket_desc)
                 break;
 
             case 801:
-                incoming[0] = "quit";
+                strcpy(incoming[0],"quit");
                 rbuffer = "803";
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
