@@ -217,21 +217,21 @@ void *connection_handler(void *socket_desc)
 
             case 701:
                 amount = atoi(incoming[1]);
-				            incoming = parseFile(loginInfo);
+		incoming = parseFile(loginInfo);
 				
-				            //Not enough funds to buy stamps
-				            if(atoi(incoming[6]) < amount){
-					           rbuffer = "703";
-					           write(sock , rbuffer , strlen(rbuffer));
-					           break;
-				            }	 
-				            //Stamps bought
-				            amount *= (-1);
-				            amount += atoi(incoming[6]);
-				            sprintf(incoming[6], "%d", amount);
-				            putToFile(loginInfo, incoming[6]);
-				            rbuffer = "704 ";
-				            strcat(rbuffer, incoming[6]);
+		//Not enough funds to buy stamps
+		if(atoi(incoming[6]) < amount){
+			rbuffer = "703";
+			write(sock , rbuffer , strlen(rbuffer));
+			break;
+		}	 
+		//Stamps bought
+		amount *= (-1);
+		amount += atoi(incoming[6]);
+		sprintf(incoming[6], "%d", amount);
+		putToFile(loginInfo, incoming[6]);
+		rbuffer = "704 ";
+		strcat(rbuffer, incoming[6]);
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
                 
