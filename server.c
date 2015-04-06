@@ -1,9 +1,10 @@
-#include<stdio.h>
-#include<string.h>    //strlen
-#include<stdlib.h>    //strlen
-#include<sys/socket.h>
-#include<arpa/inet.h> //inet_addr
-#include<unistd.h>    //write
+#include <stdio.h>
+#include <string.h>    //strlen
+#include <stdlib.h>    //strlen
+#include <sys/socket.h>
+#include <arpa/inet.h> //inet_addr
+#include <unistd.h>   
+#include "Parse.h" //write
  
 #include<pthread.h> //for threading , link with lpthread
 #define PORT 10109
@@ -85,18 +86,160 @@ void *connection_handler(void *socket_desc)
     char *message;
     char buffer[256];
     char* repeat;
-     
-    //Send some messages to the client
-    message = "205";
-    write(sock , message , strlen(message));
-    strcpy(buffer,"start");
-    while(strcmp(buffer,"quit")){
-        read(sock,buffer,256);
-        if(strcmp(buffer,repeat) == 1) printf("%s",buffer);
-        repeat = buffer;
+    int loginFailure = 0, withdraw, deposit;
+    char* loginInfo;
+    char* rbuffer;
+
+    char* incoming = parse(buffer);
+    
+
+    while(strcmp(incoming[0],"quit")){
+        switch(atoi(incoming[0])){
+            case 101: //Create Account
+                if(validateCreate(incoming) == 0){
+                    //Account Already Exists
+                    if(access(createFileName(incoming), F_OK ) == -1 ){
+                        rbuffer = "105";
+                        write(sock , rbuffer , strlen(rbuffer));
+                    }
+                    else{
+                        //Account Creation Success
+                        loginInfo = createFileName(incoming);
+                        putToFile(loginInfo,incoming);
+                        rbuffer = "104";
+                        write(sock , rbuffer , strlen(rbuffer));
+                    }
+                }
+                else{
+                    //Account Creation Failed
+                    rbuffer = "103";
+                    write(sock , rbuffer , strlen(rbuffer));
+                }
+                break;
+            case 201: //Authenticate Login
+                //Authentication Failure
+                if(validateLogin(incoming)==1){
+                    rbuffer = "203";
+                    write(sock , rbuffer , strlen(rbuffer));
+                    loginFailure++;
+                    break;
+                }
+
+                //Authentication Exceeded
+                if(loginFailure > 10){
+                    rbuffer = "204";
+                    write(sock , rbuffer , strlen(rbuffer));
+                    break;
+                }
+
+                //Authentication Success
+                loginInfo = createFileName(incoming);
+                rbuffer = "205";
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 301:
+                //Deposit Failed
+                if(validateAmount(incoming[1]) == 1){
+                    incoming = parseFile(loginInfo);
+                    rbuffer = "304 ";
+                    strcat(buffer, incoming[6]);
+                    write(sock , rbuffer , strlen(rbuffer));
+                    break;
+                }
+                //Deposit Success
+                deposit = atoi(incoming[1]);
+                incoming = parseFile(loginInfo);
+                deposit += atoi(incoming[6]);
+                sprintf(incoming[6], "%d", deposit);
+                putToFile(loginInfo,incoming);
+                rbuffer = "303 ";
+                strcat(rbuffer, incoming[6]);
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 302:
+                //ATM Full
+                incoming = parseFile(loginInfo);
+                rbuffer = "305 ";
+                strcat(rbuffer, incoming[6]);
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 401:
+                //Invalid Entry
+                if(validateAmount(incoming[1] == 1)){
+                    rbuffer = "909";
+                    write(sock , rbuffer , strlen(rbuffer));
+                    break;
+                }
+
+                //Valid Entry
+                withdraw = atoi(incoming[1]);
+                incoming = parseFile(loginInfo);
+
+                //Withdraw Failure
+                if(atoi(incoming[6]) < withdraw){
+                    incoming = parseFile(loginInfo);
+                    rbuffer = "404 ";
+                    strcat(rbuffer, incoming[6]);
+                    write(sock , rbuffer , strlen(rbuffer));
+                    break;
+                }
+                //Withdraw Success
+                withdraw *= (-1);
+                withdraw += atoi(incoming[6]);
+                sprintf(incoming[6], "%d", withdraw);
+                putToFile(loginInfo, incoming[6]);
+                rbuffer = "403 ";
+                strcat(rbuffer, incoming[6]);
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 402:
+                //ATM Empty
+                rbuffer = "402 ";
+                incoming = parseFile(loginInfo);
+                strcat(rbuffer, incoming[6]);
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 501:
+                rbuffer = "503 ";
+                incoming = parseFile(loginInfo);
+                strcat(rbuffer, incoming[6]);
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 601:
+                //Return n Previous Transactions
+                break;
+
+            case 701:
+                //Not enough funds to buy stamps
+
+                //Stamps bought
+
+                break;
+            case 702:
+                rbuffer = "705";
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 801:
+                incoming[0] = "quit";
+                rbuffer = "803";
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            default:
+                rbuffer = "909";
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+        }
     }
-    //Free the socket pointer
-    free(socket_desc);
-     
+
+    free(socket_desc); 
     return 0;
 }

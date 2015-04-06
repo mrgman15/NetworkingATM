@@ -26,6 +26,16 @@ char** parse(char* buffer){
 	return message;
 }
 
+//Opens file, retrieves information, returns array of strings containing account info
+char** parseFile(char* fileName){
+	FILE* input = fopen(fileName, "r");
+	char* string;
+	fgets(string,256,input);
+	char** message = parse(string);
+	fclose(input);
+	return message;
+}
+
 int validateName(char* name){
 	int i;
 	while(name[i] != '\0'){
@@ -124,7 +134,31 @@ void putToFile(char* fileName, char** info){
 
 char* createFileName(char** info){
 	char* fileName = malloc(80 * sizeof(char));
-	sprintf(fileName,"%s-%s-%s",info[0],info[1],info[2]);
+	sprintf(fileName,"%s-%s-%s",info[1],info[2],info[3]);
 	return fileName;
 }
+
+int validateCreate(char** input){
+	if(validateName(input[1]) == 1) return 1;
+	if(validateName(input[2]) == 1) return 1;
+	if(validatePin(input[3]) == 1) return 1;
+	if(validateDL(input[4]) == 1) return 1;
+	if(validateSSN(input[5]) == 1) return 1;
+	if(validateEmail(input[6]) == 1) return 1;
+	else return 0;
+}
+
+int validateLogin(char** input){
+	if(validateName(input[1]) == 1) return 1;
+	if(validatePin(input[2]) == 1) return 1;
+	else return 0;
+}
+
+
+
+
+
+
+
+
 
