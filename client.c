@@ -45,9 +45,19 @@ int main(int argc, char *argv[])
     n = read(sockfd,buffer,255);
     if (n < 0) error("ERROR reading from socket");
     printf("%s\n",buffer);
+    int loggedIn = 0;
 
-    while(strcmp(buffer,"quit") != 0){
+    while(1){
+        if(loggedIn == 0){
+            printf("You must create and account or login\nCreate account: 101 First Last Pin DL SSN Email\nLogin: 201 First Pin\n");
+        }
+        else printf("Please enter a command");
+        fgets(buffer,256,stdin);
+        n = write(sockfd,buffer,strlen(buffer));
+        n = read(sockfd,buffer,255);
         char** message = parse(buffer);
+        printf("%s",message[0]);
+
         switch(atoi(message[0])){
             case 103 :
                 //Account creation failed show which invalid entry
@@ -56,6 +66,7 @@ int main(int argc, char *argv[])
             case 104 :
                 //Account was created log in
                 printf("Account was created and you are now logged in. \n");
+                loggedIn = 1;
                 break;
             case 105 :
                 //Account already exists
@@ -75,6 +86,7 @@ int main(int argc, char *argv[])
                 //Authentication succeeded 
                 printf("Authentication succeeded! \n");
                 printf("You are now logged in! \n");
+                loggedIn = 1;
                 break;
             case 303 :
                 // Deposit worked, New balance is returned
@@ -137,11 +149,14 @@ int main(int argc, char *argv[])
             case 705 :
                 //Not enough stamps left
                 printf("Not enough stamps available for this transaction. \n");
-            
+                break;
+
             case 803 :
                 //Successful logout
+                loggedIn = 0;
                 printf("Logout successful \n");
                 printf("You are now logged out. \n");
+                break;
 
             case 908 :
                 //Missing entries
@@ -160,7 +175,7 @@ int main(int argc, char *argv[])
         }
 
 
-
+        /*
         bzero(buffer,256);
         fgets(buffer,255,stdin);
         n = write(sockfd,buffer,strlen(buffer));
@@ -171,6 +186,7 @@ int main(int argc, char *argv[])
         if (n < 0) 
              error("ERROR reading from socket");
         printf("%s\n",buffer);
+        */
     }
     close(sockfd);
     return 0;

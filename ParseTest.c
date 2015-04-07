@@ -1,7 +1,7 @@
 #include "Parse.h"
 
 int main(){
-	char buffer[256] = "Jordan Sanders 1235 12346546 123123123 jms0666@unt.edu";
+	char buffer[256] = "Jordan Sanders 1234 12346546 123123123 jms0666@unt.edu";
 	char** message1 = parse(buffer);
 
 	int i,error;
@@ -19,7 +19,8 @@ int main(){
 		else printf("%s is an email\n", message1[i]);
 		//*/
 	}
-	char* file = createFileName(message1);
-	putToFile(file,message1);
+	//char* file = createFileName(message1);
+	message1 = parseFile("Jordan-1234");
+	printf("%s\n",message1[6]);
 	return 0;
 }

@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 char** parse(char* buffer){
 	int i, k=0, j=0;
 	char** message = malloc(10 * sizeof(char*));
-	for(i=0;i<80;i++){
-		message[i] = malloc(80 * sizeof(char));
+	for(i=0;i<10;i++){
+		message[i] = malloc(26 * sizeof(char));
 	}
 	i=0;
-	while(buffer[j] != '\0'){
+	while(buffer[j] != '\n' && buffer[j] != '\0'){
 		if(buffer[j] == ' '){
 			message[i][k] = '\0';
 			i++;
@@ -29,12 +32,17 @@ char** parse(char* buffer){
 //Opens file, retrieves information, returns array of strings containing account info
 char** parseFile(char* fileName){
 	FILE* input = fopen(fileName, "r");
-	char* string;
-	fgets(string,256,input);
+	char string[261];
+	char c;
+	int i = 0;
+	while ((c = getc(input)) != EOF){
+		string[i++] = c;
+    }
 	char** message = parse(string);
 	fclose(input);
 	return message;
 }
+
 
 int validateName(char* name){
 	int i;
@@ -132,26 +140,54 @@ void putToFile(char* fileName, char** info){
 	fclose(account);
 }
 
+void createFile(char* fileName, char** info){
+	FILE* account = fopen(fileName, "w");
+	int i=1;
+	while(info[i][0]>= '0' && info[i][0] <= 'z'){
+		fprintf(account,"%s ",info[i]);
+		i++;
+	}
+	fprintf(account, "%s ", "0");
+	fclose(account);
+}
+
 char* createFileName(char** info){
 	char* fileName = malloc(80 * sizeof(char));
-	sprintf(fileName,"%s-%s-%s",info[1],info[2],info[3]);
+	sprintf(fileName,"%s-%s",info[1],info[3]);
 	return fileName;
 }
 
+int doesFileExist(char *filename)
+{
+  struct stat   buffer;   
+  return (stat (filename, &buffer) == 0);
+}
+
 int validateCreate(char** input){
+	printf("");
 	if(validateName(input[1]) == 1) return 1;
+	printf("");
 	if(validateName(input[2]) == 1) return 1;
+	printf("");
 	if(validatePin(input[3]) == 1) return 1;
+	printf("");
 	if(validateDL(input[4]) == 1) return 1;
+	printf("");
 	if(validateSSN(input[5]) == 1) return 1;
+	printf("");
 	if(validateEmail(input[6]) == 1) return 1;
-	else return 0;
+	printf("");
+	return 0;
 }
 
 int validateLogin(char** input){
-	if(validateName(input[1]) == 1) return 1;
+	//printf("val0\n");
+	if(validateName(input[1]) == 1){
+		return 1;
+	}
+	printf("");
 	if(validatePin(input[2]) == 1) return 1;
-	else return 0;
+	return 0;
 }
 
 void addTransaction(char** input, char* transactionType, char* info){
