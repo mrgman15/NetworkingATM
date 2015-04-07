@@ -54,9 +54,9 @@ int main(int argc, char *argv[])
         else printf("Please enter a command");
         fgets(buffer,256,stdin);
         n = write(sockfd,buffer,strlen(buffer));
+        bzero(buffer,256);
         n = read(sockfd,buffer,255);
         char** message = parse(buffer);
-        printf("%s",message[0]);
 
         switch(atoi(message[0])){
             case 103 :
@@ -173,20 +173,7 @@ int main(int argc, char *argv[])
             default :
                  printf("Error: Invalid Request. \n");
         }
-
-
-        /*
-        bzero(buffer,256);
-        fgets(buffer,255,stdin);
-        n = write(sockfd,buffer,strlen(buffer));
-        if (n < 0) 
-             error("ERROR writing to socket");
-        bzero(buffer,256);
-        n = read(sockfd,buffer,255);
-        if (n < 0) 
-             error("ERROR reading from socket");
-        printf("%s\n",buffer);
-        */
+                free(message);
     }
     close(sockfd);
     return 0;

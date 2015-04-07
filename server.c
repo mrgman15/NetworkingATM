@@ -6,7 +6,7 @@
 #include <unistd.h>   
 #include "Parse.h" //write
  
-#include<pthread.h> //for threading , link with lpthread
+#include <pthread.h> //for threading , link with lpthread
  
 void *connection_handler(void *);
  
@@ -98,7 +98,6 @@ void *connection_handler(void *socket_desc)
     while(strcmp(incoming[0],"quit")){
         int n = read(sock,buffer,261);
         incoming = parse(buffer);
-        printf("%d\n",atoi(incoming[0]));
 
         switch(atoi(incoming[0])){
             case 101: //Create Account
@@ -139,14 +138,13 @@ void *connection_handler(void *socket_desc)
                 }
 
                 //Authentication Success
-                loginInfo = createFileName(incoming);
+                loginInfo = createFileName2(incoming);
                 strcpy(rbuffer,"205");
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
 
             case 301:
                 //Deposit Failed
-                printf("bhere");
                 if(validateAmount(incoming[1]) == 1){
                     incoming = parseFile(loginInfo);
                     strcpy(rbuffer, "304 ");
@@ -156,7 +154,7 @@ void *connection_handler(void *socket_desc)
                 }
                 //Deposit Success
                 deposit = atoi(incoming[1]);
-                addTransaction(incoming,"Deposit:",incoming[1]);
+                //addTransaction(incoming,"Deposit:",incoming[1]);
                 incoming = parseFile(loginInfo);
                 deposit += atoi(incoming[6]);
                 sprintf(incoming[6], "%d", deposit);
@@ -196,7 +194,7 @@ void *connection_handler(void *socket_desc)
                     break;
                 }
                 //Withdraw Success
-                addTransaction(incoming,"Withdraw:",holder);
+                //addTransaction(incoming,"Withdraw:",holder);
                 withdraw *= (-1);
                 withdraw += atoi(incoming[6]);
                 sprintf(incoming[6], "%d", withdraw);
@@ -216,19 +214,9 @@ void *connection_handler(void *socket_desc)
 
             case 501:
                 strcpy(rbuffer,"503 ");
-                //free(incoming);
-                //char** incoming = parseFile(loginInfo);
-                FILE* input = fopen(loginInfo, "r");
-                char balance1[27];
-                //fscanf(input, "%*s %*s %*s %*s %*s %*s %s",balance1);
-                int i=0;
-                while(i<7){
-                    fgets(balance1,27,input);
-                    i++;
-                }
-                fclose(input);
-                printf("%s",balance1);
-                strcat(rbuffer, balance1);
+                free(incoming);
+                incoming = parseFile(loginInfo);
+                strcat(rbuffer, incoming[6]);
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
 
@@ -263,7 +251,7 @@ void *connection_handler(void *socket_desc)
         			break;
         		}	 
         		//Stamps bought
-                addTransaction(incoming,"Stamps",holder);
+                //addTransaction(incoming,"Stamps",holder);
         		amount *= (-1);
         		amount += atoi(incoming[6]);
         		sprintf(incoming[6], "%d", amount);
@@ -281,6 +269,11 @@ void *connection_handler(void *socket_desc)
             case 801:
                 strcpy(loginInfo,"");
                 strcpy(rbuffer ,"803");
+                write(sock , rbuffer , strlen(rbuffer));
+                break;
+
+            case 810:
+                strcpy(rbuffer ,loginInfo);
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
 

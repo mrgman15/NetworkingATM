@@ -157,6 +157,12 @@ char* createFileName(char** info){
 	return fileName;
 }
 
+char* createFileName2(char** info){
+	char* fileName = malloc(80 * sizeof(char));
+	sprintf(fileName,"%s-%s",info[1],info[2]);
+	return fileName;
+}
+
 int doesFileExist(char *filename)
 {
   struct stat   buffer;   
