@@ -9,7 +9,7 @@ char** parse(char* buffer){
 	int i, k=0, j=0;
 	char** message = malloc(10 * sizeof(char*));
 	for(i=0;i<10;i++){
-		message[i] = malloc(26 * sizeof(char));
+		message[i] = malloc(26* sizeof(char));
 	}
 	i=0;
 	while(buffer[j] != '\n' && buffer[j] != '\0'){

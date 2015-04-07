@@ -216,11 +216,20 @@ void *connection_handler(void *socket_desc)
 
             case 501:
                 strcpy(rbuffer,"503 ");
-                free(incoming);
-                char** incoming = parseFile(loginInfo);
-                printf("%s",incoming[6]);
-                //strcat(rbuffer, incoming[6]);
-                //write(sock , rbuffer , strlen(rbuffer));
+                //free(incoming);
+                //char** incoming = parseFile(loginInfo);
+                FILE* input = fopen(loginInfo, "r");
+                char balance1[27];
+                //fscanf(input, "%*s %*s %*s %*s %*s %*s %s",balance1);
+                int i=0;
+                while(i<7){
+                    fgets(balance1,27,input);
+                    i++;
+                }
+                fclose(input);
+                printf("%s",balance1);
+                strcat(rbuffer, balance1);
+                write(sock , rbuffer , strlen(rbuffer));
                 break;
 
             case 601:
@@ -270,7 +279,7 @@ void *connection_handler(void *socket_desc)
                 break;
 
             case 801:
-                strcpy(incoming[0],"quit");
+                strcpy(loginInfo,"");
                 strcpy(rbuffer ,"803");
                 write(sock , rbuffer , strlen(rbuffer));
                 break;
