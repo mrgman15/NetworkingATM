@@ -65,7 +65,7 @@ int validatePin(char* pin){
 		i++;
 	}
 	if(i != 4) return 1;
-	return 0;		
+	return 0;
 }
 
 int validateDL(char* DL){
@@ -77,7 +77,7 @@ int validateDL(char* DL){
 		i++;
 	}
 	if(i != 8) return 1;
-	return 0;	
+	return 0;
 }
 
 int validateSSN(char* SSN){
@@ -89,7 +89,7 @@ int validateSSN(char* SSN){
 		i++;
 	}
 	if(i != 9) return 1;
-	return 0;	
+	return 0;
 }
 
 int validateEmail(char* email){
@@ -115,10 +115,11 @@ int validateAmount(char* amount){
 		i++;
 	}
 	if(i > 10) return 1;
-	return 0;	
+	return 0;
 }
 
 int validateTransactions(char* num){
+	/*
 	int i;
 	while(num[i] != '\0'){
 		if(!(num[i]>='0'&& num[i]<='5')){
@@ -127,7 +128,8 @@ int validateTransactions(char* num){
 		i++;
 	}
 	if(i != 1) return 1;
-	return 0;	
+	*/
+	return 0;
 }
 
 void putToFile(char* fileName, char** info){
@@ -165,11 +167,12 @@ char* createFileName2(char** info){
 
 int doesFileExist(char *filename)
 {
-  struct stat   buffer;   
+  struct stat   buffer;
   return (stat (filename, &buffer) == 0);
 }
 
 int validateCreate(char** input){
+	/*
 	printf("");
 	if(validateName(input[1]) == 1) return 1;
 	printf("");
@@ -184,15 +187,19 @@ int validateCreate(char** input){
 	if(validateEmail(input[6]) == 1) return 1;
 	printf("");
 	return 0;
+	*/
+	return 0;
 }
 
 int validateLogin(char** input){
+	/*
 	//printf("val0\n");
 	if(validateName(input[1]) == 1){
 		return 1;
 	}
 	printf("");
 	if(validatePin(input[2]) == 1) return 1;
+	*/
 	return 0;
 }
 
@@ -215,12 +222,3 @@ void addTransaction(char** input, char* transactionType, char* info){
 		input[i] = transactionType;
 	}
 }
-
-
-
-
-
-
-
-
-
