@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <errno.h>
-#include <sys/socket.h>
-#include <resolv.h>
-#include <arpa/inet.h>
-#include <errno.h>
+#include "test.h"
 
 #define MY_PORT		9999
 #define MAXBUF		1024
@@ -39,20 +34,29 @@ int main(int Count, char *Strings[]){
 
 	/*---Forever... ---*/
 	while (1){
-		int clientfd, destfd;
+		int clientfd;
 		struct sockaddr_in client_addr;
-		struct sockaddr_in dest_addr;
 		int addrlen=sizeof(client_addr);
-		int addlen2=sizeof(dest_addr);
+		char* token;
 
 		/*---accept a connection (creating a data pipe)---*/
 		clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
 		/*---Echo back anything sent---*/
-		//recv(clientfd, buffer, 1024, 0);
-		//printf("Header: %s\n",buffer);
-		//printf("GET / HTTP/1.1\r\nHost: host:port\r\n\r\n");
-		send(clientfd, buffer, recv(clientfd, buffer, MAXBUF, 0), 0);
+		recv(clientfd, buffer, 2024, 0);
+		token = strtok(buffer," ");
+		token = strtok(NULL," ");
+		token = token + 1;
+		char string[100];
+		strcpy(string, "www.");
+		strcat(string,token);
+		printf("%s\n",string);
 
+		if(doesFileExist(string) != 1) getHTML(string);
+		FILE* site = fopen(string,"r");
+		while(fgets(buffer,1024,site)!=NULL){
+			send(clientfd, buffer,1024 , 0);
+			bzero(buffer,sizeof(buffer));
+		}
 
 		/*---Close data connection---*/
 		close(clientfd);

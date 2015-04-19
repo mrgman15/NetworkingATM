@@ -8,15 +8,12 @@
 #include <sys/types.h>
 #include <netdb.h>
 #include <netinet/in.h>
-
-void putToFile(char* fileName, char* info);
-void getHTML(char* website);
+#include <sys/stat.h>
 
 
-int main(){
-  getHTML("www.example.com");
-
-  return 0;
+int doesFileExist(char *filename){
+  struct stat   buffer;
+  return (stat (filename, &buffer) == 0);
 }
 
 
@@ -39,11 +36,12 @@ void getHTML(char* website){
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
-  getaddrinfo("www.example.com", "80", &hints, &res);
+  getaddrinfo(website, "80", &hints, &res);
   sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
   connect(sockfd, res->ai_addr, res->ai_addrlen);
 
   send(sockfd, string, strlen(string),0);
+	strcat(website,".html");
   int i=0;
   while(strlen(buffer)!=0 || i<1){
     bzero(buffer, sizeof(buffer));
@@ -52,4 +50,5 @@ void getHTML(char* website){
     //printf("%s",buffer);
     i++;
 	}
+	close(sockfd);
 }
