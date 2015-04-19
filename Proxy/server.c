@@ -39,16 +39,18 @@ int main(int Count, char *Strings[]){
 
 	/*---Forever... ---*/
 	while (1){
-		int clientfd;
+		int clientfd, destfd;
 		struct sockaddr_in client_addr;
+		struct sockaddr_in dest_addr;
 		int addrlen=sizeof(client_addr);
+		int addlen2=sizeof(dest_addr);
 
 		/*---accept a connection (creating a data pipe)---*/
 		clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
 		/*---Echo back anything sent---*/
-		recv(clientfd, buffer, 1024, 0);
-		printf("Header: %s\n",buffer);
-		printf("GET / HTTP/1.1\r\nHost: host:port\r\n\r\n");
+		//recv(clientfd, buffer, 1024, 0);
+		//printf("Header: %s\n",buffer);
+		//printf("GET / HTTP/1.1\r\nHost: host:port\r\n\r\n");
 		send(clientfd, buffer, recv(clientfd, buffer, MAXBUF, 0), 0);
 
 
