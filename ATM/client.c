@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <netdb.h> 
+#include <netdb.h>
 #include "Parse.h"
 
 void error(const char *msg)
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     }
     portno = atoi(argv[2]);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) 
+    if (sockfd < 0)
         error("ERROR opening socket");
     server = gethostbyname(argv[1]);
     if (server == NULL) {
@@ -36,11 +36,11 @@ int main(int argc, char *argv[])
     }
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, 
+    bcopy((char *)server->h_addr,
          (char *)&serv_addr.sin_addr.s_addr,
          server->h_length);
     serv_addr.sin_port = htons(portno);
-    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
+    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
         error("ERROR connecting");
     n = read(sockfd,buffer,255);
     if (n < 0) error("ERROR reading from socket");
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         else printf("Please enter a command");
         fgets(buffer,256,stdin);
         n = write(sockfd,buffer,strlen(buffer));
-        bzero(buffer,256);
+        bzero(buffer,sizeof(buffer));
         n = read(sockfd,buffer,255);
         char** message = parse(buffer);
 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
                 close(sockfd);
                 break;
             case 205 :
-                //Authentication succeeded 
+                //Authentication succeeded
                 printf("Authentication succeeded! \n");
                 printf("You are now logged in! \n");
                 loggedIn = 1;
@@ -104,8 +104,8 @@ int main(int argc, char *argv[])
                 printf("Deposit failed!. \n ");
                 printf("Your deposit has been returned \n");
                 printf("Your balance is still $%s. \n", message[1]);
-                break;      
-                
+                break;
+
             case 403 :
                 //Withdraw is successful
                 printf("Your withdraw was successful! \n");
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
             break;
 
             case 603 :
-                //Transactions ???? 
+                //Transactions ????
             break;
 
             case 703 :
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
             case 908 :
                 //Missing entries
                 printf("Your request was missing entries. \n");
-                printf("Please try again. \n"); 
+                printf("Please try again. \n");
             break;
 
             case 909 :

@@ -30,7 +30,7 @@ void getHTML(char* website){
   char string[1024] = "GET / HTTP/1.1\r\nHost: ";
   strcat(string, website);
   strcat(string,":80\r\nConnection: keep-alive\r\n\r\n");
-  char buffer[2048];
+  char buffer[12256];
 
   memset(&hints, 0, sizeof hints);
   hints.ai_family = AF_UNSPEC;
@@ -41,11 +41,11 @@ void getHTML(char* website){
   connect(sockfd, res->ai_addr, res->ai_addrlen);
 
   send(sockfd, string, strlen(string),0);
-  strcat(website,".html");
+  //strcat(website,".html");
   int i=0;
   while(strlen(buffer)!=0 || i<1){
     bzero(buffer, sizeof(buffer));
-    recv(sockfd, buffer, 2048,0);
+    recv(sockfd, buffer, 12256,0);
     putToFile(website, buffer);
     //printf("%s",buffer);
     i++;
