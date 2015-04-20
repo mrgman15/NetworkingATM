@@ -41,7 +41,7 @@ void getHTML(char* website){
   connect(sockfd, res->ai_addr, res->ai_addrlen);
 
   send(sockfd, string, strlen(string),0);
-	strcat(website,".html");
+  strcat(website,".html");
   int i=0;
   while(strlen(buffer)!=0 || i<1){
     bzero(buffer, sizeof(buffer));

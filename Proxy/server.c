@@ -1,7 +1,7 @@
 #include "test.h"
 
 #define MY_PORT		9999
-#define MAXBUF		1024
+#define MAXBUF		102400
 
 int main(int Count, char *Strings[]){
 	int sockfd;
@@ -33,7 +33,7 @@ int main(int Count, char *Strings[]){
 	}
 
 	/*---Forever... ---*/
-	while (1){
+//	while (1){
 		int clientfd;
 		struct sockaddr_in client_addr;
 		int addrlen=sizeof(client_addr);
@@ -42,7 +42,7 @@ int main(int Count, char *Strings[]){
 		/*---accept a connection (creating a data pipe)---*/
 		clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
 		/*---Echo back anything sent---*/
-		recv(clientfd, buffer, 2024, 0);
+		recv(clientfd, buffer, 1024, 0);
 		token = strtok(buffer," ");
 		token = strtok(NULL," ");
 		token = token + 1;
@@ -50,17 +50,23 @@ int main(int Count, char *Strings[]){
 		strcpy(string, "www.");
 		strcat(string,token);
 		printf("%s\n",string);
+		//Check for file existance
+		char* fileN = string;
+		strcat(fileN,".html");
+		if(doesFileExist(fileN) != 1) getHTML(string);
 
-		if(doesFileExist(string) != 1) getHTML(string);
+		//Open file for sending
 		FILE* site = fopen(string,"r");
-		while(fgets(buffer,1024,site)!=NULL){
-			send(clientfd, buffer,1024 , 0);
+		bzero(buffer,sizeof(buffer));
+		while(fgets(buffer,102400,site)!=NULL){
+			send(clientfd, buffer,102400 , 0);
 			bzero(buffer,sizeof(buffer));
+			//printf("%s",buffer);
 		}
 
 		/*---Close data connection---*/
 		close(clientfd);
-	}
+//	}
 
 	/*---Clean up (should never get here!)---*/
 	close(sockfd);
