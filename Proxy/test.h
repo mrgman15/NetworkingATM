@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 
 
 int doesFileExist(char *filename){
@@ -39,14 +40,13 @@ void getHTML(char* website){
   getaddrinfo(website, "80", &hints, &res);
   sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
   connect(sockfd, res->ai_addr, res->ai_addrlen);
-
-  send(sockfd, string, strlen(string),0);
+  int len = strlen(string);
+  send(sockfd, string, len,0);
   //strcat(website,".html");
   int i=0;
-  while(strlen(buffer)!=0 || i<1){
-    bzero(buffer, sizeof(buffer));
-    recv(sockfd, buffer, 12256,0);
+  while(recv(sockfd, buffer, 12256,0) !=0 || i<1){
     putToFile(website, buffer);
+    bzero(buffer, sizeof(buffer));
     //printf("%s",buffer);
     i++;
 	}
