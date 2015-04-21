@@ -1,6 +1,6 @@
-#include "test.h"
+#include "proxy.h"
 
-#define MY_PORT		9999
+#define MY_PORT		10005
 #define MAXBUF		1024
 
 int main(int Count, char *Strings[]){
@@ -33,16 +33,14 @@ int main(int Count, char *Strings[]){
 	}
 
 	/*---Forever... ---*/
-	while (1){
+	//while (1){
 		int clientfd;
 		struct sockaddr_in client_addr;
 		int addrlen=sizeof(client_addr);
 		char* token;
-		//char header[] = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
 
 		/*---accept a connection (creating a data pipe)---*/
 		clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
-
 
 		recv(clientfd, buffer, 1024, 0);
 		token = strtok(buffer," ");
@@ -51,31 +49,34 @@ int main(int Count, char *Strings[]){
 		char string[100];
 		strcpy(string, "www.");
 		strcat(string,token);
-		//Check for file existance
-		//char* fileN = string;
-		//strcat(fileN,".html");
+		//String = www.website.com
+
+		//if cached don't download new version
 		if(doesFileExist(string) != 1) getHTML(string);
 
 		//Open file for sending
 		FILE* site = fopen(string,"r");
-		send(clientfd,header,sizeof(header),0);
+
 		bzero(buffer,sizeof(buffer));
-		token = strtok(buffer, "<!DOCTYPE HTML>");
-		send(clientfd,token,sizeof(token),0);
-		printf("Header: %s\n",token);
-		//send(clientfd,"<!DOCTYPE HTML>",14,0);
-		token = strtok(buffer, "<!DOCTYPE HTML>");
-		send(clientfd,token,sizeof(token),0);
+		fgets(buffer,1024,site);
+		while(buffer[0] != '<'){
+			send(clientfd,buffer,sizeof(buffer),0);
+			printf("%s",buffer);
+			bzero(buffer,sizeof(buffer));
+			fgets(buffer,1024,site);
+		}
+		printf("%s",buffer);
+
 		send(clientfd,buffer,sizeof(buffer),0);
+		send(clientfd,"\r\n",sizeof("\r\n"),0);
 		while(fgets(buffer,1024,site)!=NULL){
 			send(clientfd, buffer, 1024, 0);
-			//printf("%s",buffer);
+			printf("%s",buffer);
 			bzero(buffer,sizeof(buffer));
 		}
-
 		/*---Close data connection---*/
 		close(clientfd);
-	}
+	//}
 
 	/*---Clean up (should never get here!)---*/
 	close(sockfd);

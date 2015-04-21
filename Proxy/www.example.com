@@ -25,7 +25,7 @@ Content-Length: 1270
         margin: 0;
         padding: 0;
         font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        
+
     }
     div {
         width: 600px;
@@ -49,7 +49,7 @@ Content-Length: 1270
             padding: 1em;
         }
     }
-    </style>    
+    </style>
 </head>
 
 <body>

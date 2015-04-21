@@ -1,4 +1,4 @@
-#include "test.h"
+#include "proxy.h"
 #include <pthread.h> //for threading , link with lpthread
 
 #define MAXBUF 1024
@@ -63,6 +63,7 @@ int main(int argc , char *argv[]){
 void *connection_handler(void *socket_desc){
   char buffer[MAXBUF];
   //Get the socket descriptor
+  printf("%s",socket_desc);
   int sockfd = *(int*)socket_desc;
   int clientfd;
 	struct sockaddr_in client_addr;
@@ -76,7 +77,7 @@ void *connection_handler(void *socket_desc){
 
 	recv(clientfd, buffer, 1024, 0);
 	token = strtok(buffer," ");
-	token = strtok(buffer," ");
+	token = strtok(NULL," ");
   printf("%s\n",token);
 	char string[100];
 	strcpy(string, "www.");
