@@ -1,6 +1,6 @@
 #include "proxy.h"
 
-#define MY_PORT		10005
+#define MY_PORT		10008
 #define MAXBUF		1024
 
 int main(int Count, char *Strings[]){
@@ -33,16 +33,16 @@ int main(int Count, char *Strings[]){
 	}
 
 	/*---Forever... ---*/
-	//while (1){
-		int clientfd;
+	while (1){
+		int socket_desc;
 		struct sockaddr_in client_addr;
 		int addrlen=sizeof(client_addr);
 		char* token;
 
 		/*---accept a connection (creating a data pipe)---*/
-		clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
+		socket_desc = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
 
-		recv(clientfd, buffer, 1024, 0);
+		recv(socket_desc, buffer, 1024, 0);
 		token = strtok(buffer," ");
 		token = strtok(NULL," ");
 		token = token + 1;
@@ -59,24 +59,24 @@ int main(int Count, char *Strings[]){
 
 		bzero(buffer,sizeof(buffer));
 		fgets(buffer,1024,site);
-		while(buffer[0] != '<'){
-			send(clientfd,buffer,sizeof(buffer),0);
-			printf("%s",buffer);
+		while(buffer[0] != '<' && buffer[1] != '!'){
+			//send(socket_desc,buffer,sizeof(buffer),0);
+			//printf("%s",buffer);
 			bzero(buffer,sizeof(buffer));
 			fgets(buffer,1024,site);
 		}
-		printf("%s",buffer);
-
-		send(clientfd,buffer,sizeof(buffer),0);
-		send(clientfd,"\r\n",sizeof("\r\n"),0);
+		//printf("%s",buffer);
+		send(socket_desc,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n",sizeof("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"),0);
+		//send(socket_desc,"<!DOCTYPE HTML>",sizeof("<!DOCTYPE HTML>"),0);
+		send(socket_desc,buffer,sizeof(buffer),0);
 		while(fgets(buffer,1024,site)!=NULL){
-			send(clientfd, buffer, 1024, 0);
+			send(socket_desc, buffer, 1024, 0);
 			printf("%s",buffer);
 			bzero(buffer,sizeof(buffer));
 		}
 		/*---Close data connection---*/
-		close(clientfd);
-	//}
+		close(socket_desc);
+	}
 
 	/*---Clean up (should never get here!)---*/
 	close(sockfd);
