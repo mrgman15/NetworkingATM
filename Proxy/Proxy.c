@@ -87,6 +87,7 @@ void *connection_handler(void *desc){
   strcat(string,token);
   //String = www.website.com
 
+  //possibly implement blacklist check here?
   //if cached don't download new version
   if(doesFileExist(string) != 1) getHTML(string);
 
