@@ -79,6 +79,7 @@ int main(int Count, char *Strings[]){
 	}
 
 	/*---Clean up (should never get here!)---*/
+	//printf("Why are we here";
 	close(sockfd);
 	return 0;
 }
