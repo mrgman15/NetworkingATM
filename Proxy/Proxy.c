@@ -96,8 +96,8 @@ void *connection_handler(void *desc){
 
   bzero(buffer,sizeof(buffer));
   fgets(buffer,1024,site);
-  while(buffer[0] != '<' && buffer[1] != '!'){
-    //send(socket_desc,buffer,sizeof(buffer),0);
+  while(buffer[0] != '<' && buffer[1] != '!'){ //Where is the data being passed?
+    //send(socket_desc,buffer,sizeof(buffer),0); 
     //printf("%s",buffer);
     bzero(buffer,sizeof(buffer));
     fgets(buffer,1024,site);
