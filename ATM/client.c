@@ -42,9 +42,10 @@ int main(int argc, char *argv[])
     serv_addr.sin_port = htons(portno);
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
         error("ERROR connecting");
-    n = read(sockfd,buffer,255);
-    if (n < 0) error("ERROR reading from socket");
-    printf("%s\n",buffer);
+    //n = read(sockfd,buffer,255);
+    //printf("buffer: %s\n",buffer);
+    //if (n < 0) error("ERROR reading from socket");
+    //printf("%s\n",buffer);
     int loggedIn = 0;
 
     while(1){
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
         else printf("Please enter a command");
         fgets(buffer,256,stdin);
         n = write(sockfd,buffer,strlen(buffer));
-        bzero(buffer,sizeof(buffer));
+        bzero(buffer,256);
         n = read(sockfd,buffer,255);
         char** message = parse(buffer);
 

@@ -1,0 +1,26 @@
+HTTP/1.1 200 OK
+Server: Apache/2.2.22 (Ubuntu)
+Last-Modified: Wed, 28 May 2014 17:21:36 GMT
+ETag: "81362-b1-4fa790b6a9b27"
+Vary: Accept-Encoding
+Content-Type: text/html
+X-Backend: primary_pool_1s
+X-BackendName: dyno1v3_1s
+X-Cacheable: YES
+Transfer-Encoding: chunked
+Date: Fri, 24 Apr 2015 04:30:46 GMT
+X-Varnish: 35258975
+Age: 0
+Via: 1.1 varnish
+Connection: keep-alive
+X-Served-By: dynocache1v1
+X-Cache: MISS
+
+00b1
+<html><body><h1>It works!</h1>
+<p>This is the default web page for this server.</p>
+<p>The web server software is running but no content has been added, yet.</p>
+</body></html>
+
+0
+
