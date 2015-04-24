@@ -105,6 +105,7 @@ void getHTML(char* website){
 
   while(recv(sockfd, buffer, 24512,0) !=0){
     strcpy(buffer2,profanityFilter(buffer));
+    printf("buffer: %s\n",buffer2);
     putToFile(website, buffer2);
     bzero(buffer, sizeof(buffer));
     bzero(buffer2, sizeof(buffer2));

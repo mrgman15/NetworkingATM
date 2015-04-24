@@ -29,7 +29,7 @@ int main(int argc , char *argv[]){
   puts("bind done");
 
   //Listen
-  listen(socket_desc , 3);
+  listen(socket_desc , 15);
 
   //Accept and incoming connection
   puts("Waiting for incoming connections...");
@@ -82,7 +82,7 @@ void *connection_handler(void *desc) {
     printf("Closing connection\n");
     close(socket_desc);
     free(desc);
-    return 0;
+    pthread_exit("Closing Connection");
   }
 
   printf("URL: '%s'\n", url);
@@ -108,17 +108,15 @@ void *connection_handler(void *desc) {
 
     while(1){
       send(socket_desc, buffer,sizeof(buffer), 0);
-      if(buffer[0] == '\0') break;
+      printf("Buffer: %s\n",buffer);
       bzero(buffer,sizeof(buffer));
       if(fgets(buffer,8096,site) == NULL) break;
-      //printf("%s\n",buffer);
-      //strcpy(buffer,profanityFilter(buffer));
     }
   /*---Close data connection---*/
   //close(socket_desc)
-  printf("Closing connection\n");
   fclose(site);
+  printf("Closing connection\n");
   close(socket_desc);
   free(desc);
-  return 0;
+  pthread_exit("Closing Connection");
 }
